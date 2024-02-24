@@ -1,0 +1,14 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1%;
+    margin-bottom: 1%;
+    border-radius: 5px;
+}
+
+.item {
+    color: white;
+    width: fit-content;
+    text-align: center;
+}
