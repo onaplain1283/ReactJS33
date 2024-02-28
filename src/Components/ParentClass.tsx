@@ -1,5 +1,5 @@
-import React from "react";
-import ChildClass from "./ChildClass.tsx";
+import React, { createRef, Fragment, RefObject } from "react";
+import ChildFunction from "./ChildFunction.tsx";
 
 type todos = {
   userId: number;
@@ -13,6 +13,8 @@ export default class ParentClass extends React.Component<
   {
     inputValue: string;
     todos: todos[];
+    isDisabled: boolean;
+    ref: RefObject<HTMLInputElement> | null;
   }
 > {
   constructor(props: Record<string, never>) {
@@ -20,6 +22,8 @@ export default class ParentClass extends React.Component<
     this.state = {
       inputValue: "",
       todos: [],
+      isDisabled: false,
+      ref: createRef(),
     };
     this.handleInput = this.handleInput.bind(this);
   }
@@ -73,28 +77,51 @@ export default class ParentClass extends React.Component<
   }
 
   handleInput(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.currentTarget.value.includes("react")) {
+      this.setState({
+        isDisabled: true,
+      });
+    } else if (!e.currentTarget.value.includes("react")) {
+      this.setState({
+        isDisabled: false,
+      });
+    }
     this.setState({ inputValue: e.target.value });
   }
 
+  handleFocus = () => {
+    if (this.state.ref !== null) this.state.ref.current?.focus();
+  };
+
   render() {
     const list = this.state.todos.map((el) => (
-      <ChildClass
+      <ChildFunction
         userId={el.userId}
         id={el.id}
         title={el.title}
         completed={el.completed}
+        key={el.id}
       />
     ));
     return (
-      <div>
+      <Fragment>
         <form>
-          <input type="text" onChange={(e) => this.handleInput(e)} />
-          <button type="reset">Reset</button>
+          <input
+            ref={this.state.ref}
+            type="text"
+            onChange={(e) => this.handleInput(e)}
+          />
+          <button disabled={this.state.isDisabled} type="reset">
+            Reset
+          </button>
+          <button type="button" onClick={this.handleFocus}>
+            Focus
+          </button>
         </form>
         <p>{this.state.inputValue}</p>
 
         <div>{...list}</div>
-      </div>
+      </Fragment>
     );
   }
 }
